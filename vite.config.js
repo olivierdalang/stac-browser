@@ -103,13 +103,18 @@ export default defineConfig(async ({ mode }) => {
   const configFromEnv = dynamicConfig
     ? Object.fromEntries(Object.entries(env).filter(([k]) => k !== "pathPrefix"))
     : env;
+  const minimal = mode === "minimal";
 
   return ({
     base: dynamicConfig ? "./" : config.pathPrefix,
     build: {
-      sourcemap: mode !== "minimal",
+      sourcemap: !minimal,
+      cssCodeSplit: !minimal,
       rollupOptions: {
         external: ["fs/promises"],
+        output: {
+          inlineDynamicImports: minimal,
+        },
       },
     },
     css: {
